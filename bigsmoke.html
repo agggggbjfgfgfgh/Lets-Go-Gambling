@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Big Smoke Table</title>
+<style>
+body {
+    background-image: url('https://i.imgflip.com/5lc1pb.jpg');
+    background-size: cover;
+    background-position: center;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    color: white;
+}
+#balance { font-size: 24px; margin: 20px; }
+button { font-size: 18px; padding: 15px; margin: 10px; cursor: pointer; }
+#result { font-size: 24px; margin-top: 20px; }
+.cup { font-size: 40px; cursor: pointer; display: inline-block; margin: 0 15px; }
+</style>
+</head>
+<body>
+
+<h1>Big Smoke Table - Find the Burger!</h1>
+<div id="balance">Balance: $0</div>
+<p>Guess which cup the burger 🍔 is under!</p>
+<div>
+    <span class="cup" data-cup="0">🥤</span>
+    <span class="cup" data-cup="1">🥤</span>
+    <span class="cup" data-cup="2">🥤</span>
+</div>
+<div id="result"></div>
+<br><button onclick="location.href='index.html'">Back to Menu</button>
+
+<audio id="winSound" src="win.mp3"></audio>
+<audio id="loseSound" src="lose.mp3"></audio>
+
+<script>
+let balance = Number(localStorage.getItem('balance')) || 0;
+const balanceEl = document.getElementById('balance');
+balanceEl.textContent = `Balance: $${balance}`;
+
+const cups = document.querySelectorAll('.cup');
+const winSound = document.getElementById('winSound');
+const loseSound = document.getElementById('loseSound');
+
+cups.forEach(cup => {
+    cup.addEventListener('click', () => {
+        const bet = 100; // Fixed bet per round, you can change
+        if(bet>balance){ alert("Not enough balance!"); return; }
+
+        const correctCup = Math.floor(Math.random()*3);
+        const chosenCup = Number(cup.dataset.cup);
+
+        if(chosenCup === correctCup){
+            balance += bet;
+            balanceEl.textContent = `Balance: $${balance}`;
+            localStorage.setItem('balance', balance);
+            document.getElementById('result').textContent = `You found the burger! You win $${bet}! 🍔`;
+            winSound.currentTime = 0;
+            winSound.play();
+        } else {
+            balance -= bet;
+            balanceEl.textContent = `Balance: $${balance}`;
+            localStorage.setItem('balance', balance);
+            document.getElementById('result').textContent = `Wrong cup! You lose $${bet}! 😢`;
+            loseSound.currentTime = 0;
+            loseSound.play();
+        }
+    });
+});
+</script>
+
+</body>
+</html>
