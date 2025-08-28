@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blackjack</title>
+<style>
+body { 
+    background-image: url('https://i.imgflip.com/5lc1pb.jpg');
+    background-size: cover; background-position: center; font-family: Arial, sans-serif; text-align:center; color:white;
+}
+#balance{ font-size:24px; margin:20px; }
+button{ font-size:16px; padding:10px; margin:10px; cursor:pointer; }
+#blackjackResult{ font-size:20px; margin-top:20px; }
+</style>
+</head>
+<body>
+<h1>Blackjack - Dealer: JackBlack</h1>
+<div id="balance">Balance: $0</div>
+<input type="number" id="blackjackBet" placeholder="Bet amount">
+<button id="dealBtn">Deal</button>
+<div id="blackjackResult"></div>
+<br><button onclick="location.href='index.html'">Back to Menu</button>
+<audio id="gamblingSound" src="Lets.mp3"></audio>
+
+<script>
+let balance = Number(localStorage.getItem('balance')) || 0;
+const balanceEl = document.getElementById('balance');
+balanceEl.textContent=`Balance: $${balance}`;
+const gamblingSound = document.getElementById('gamblingSound');
+
+function drawCard(){ return Math.floor(Math.random()*11)+1; }
+
+document.getElementById('dealBtn').addEventListener('click',()=>{
+    const bet=Number(document.getElementById('blackjackBet').value);
+    if(bet<=0||bet>balance){alert('Invalid bet'); return;}
+
+    gamblingSound.currentTime=0; gamblingSound.loop=true; gamblingSound.play();
+
+    let player=drawCard()+drawCard();
+    let dealer=drawCard()+drawCard();
+
+    setTimeout(()=>{
+        gamblingSound.pause();
+        let msg=`You: ${player} | JackBlack: ${dealer}\n`;
+        if(player>21) {balance-=bet; msg+='You busted! You lose.';}
+        else if(dealer>21 || player>dealer){balance+=bet; msg+='You win!';}
+        else if(player===dealer){msg+='Push!';}
+        else{balance-=bet; msg+='You lose.';}
+        document.getElementById('blackjackResult').textContent=msg;
+        balanceEl.textContent=`Balance: $${balance}`;
+        localStorage.setItem('balance',balance);
+    },1000);
+});
+</script>
+</body>
+</html>
