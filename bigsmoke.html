@@ -15,14 +15,16 @@ body {
 }
 #balance { font-size: 24px; margin: 20px; }
 button { font-size: 18px; padding: 15px; margin: 10px; cursor: pointer; }
-#result { font-size: 24px; margin-top: 20px; }
+#result { font-size: 22px; margin-top: 20px; }
 .cup { font-size: 40px; cursor: pointer; display: inline-block; margin: 0 15px; }
+#dealer { font-size: 20px; margin-bottom: 15px; }
 </style>
 </head>
 <body>
 
 <h1>Big Smoke Table - Find the Burger!</h1>
 <div id="balance">Balance: $0</div>
+<div id="dealer">Dealer: Big Smoke</div>
 <p>Guess which cup the burger 🍔 is under!</p>
 <div>
     <span class="cup" data-cup="0">🥤</span>
@@ -44,9 +46,21 @@ const cups = document.querySelectorAll('.cup');
 const winSound = document.getElementById('winSound');
 const loseSound = document.getElementById('loseSound');
 
+const winLines = [
+    "I got you fam, you lucky!",
+    "Yeah! That's my boy!",
+    "You found it! Big Smoke approves!"
+];
+
+const loseLines = [
+    "Ha! Better luck next time.",
+    "Don't make me mad, homie.",
+    "You missed it! Big Smoke wins this round."
+];
+
 cups.forEach(cup => {
     cup.addEventListener('click', () => {
-        const bet = 100; // Fixed bet per round, you can change
+        const bet = 100; // fixed bet
         if(bet>balance){ alert("Not enough balance!"); return; }
 
         const correctCup = Math.floor(Math.random()*3);
@@ -56,14 +70,16 @@ cups.forEach(cup => {
             balance += bet;
             balanceEl.textContent = `Balance: $${balance}`;
             localStorage.setItem('balance', balance);
-            document.getElementById('result').textContent = `You found the burger! You win $${bet}! 🍔`;
+            const line = winLines[Math.floor(Math.random()*winLines.length)];
+            document.getElementById('result').textContent = `You found the burger! You win $${bet}! 🍔\n"${line}"`;
             winSound.currentTime = 0;
             winSound.play();
         } else {
             balance -= bet;
             balanceEl.textContent = `Balance: $${balance}`;
             localStorage.setItem('balance', balance);
-            document.getElementById('result').textContent = `Wrong cup! You lose $${bet}! 😢`;
+            const line = loseLines[Math.floor(Math.random()*loseLines.length)];
+            document.getElementById('result').textContent = `Wrong cup! You lose $${bet}! 😢\n"${line}"`;
             loseSound.currentTime = 0;
             loseSound.play();
         }
