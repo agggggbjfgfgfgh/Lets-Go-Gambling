@@ -3,28 +3,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Virtual Casino Menu</title>
+<title>Virtual Casino</title>
 <style>
 body {
-    background-image: url('https://i.imgflip.com/5lc1pb.jpg');
-    background-size: cover;
-    background-position: center;
+    background-color: #111;
     font-family: Arial, sans-serif;
+    color: white;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: url('https://i.imgflip.com/5lc1pb.jpg');
+    background-size: 20%; /* small portion of image */
+    background-repeat: no-repeat;
+    background-position: bottom right;
+}
+
+.container {
     text-align: center;
-    color: white;
+    background: rgba(0,0,0,0.8);
+    padding: 40px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 0 20px #fff;
 }
-h1 { margin-top: 30px; font-size: 36px; }
-#balance { font-size: 24px; margin: 20px; }
+
+h1 { font-size: 36px; margin-bottom: 20px; }
+#balance { font-size: 24px; margin-bottom: 30px; }
+
 button {
-    font-size: 22px;
-    padding: 20px 30px;
-    margin: 15px;
+    display: block;
+    font-size: 20px;
+    padding: 15px 25px;
+    margin: 15px auto;
     cursor: pointer;
-    border-radius: 10px;
-    background-color: rgba(0,0,0,0.7);
-    color: white;
-    border: 2px solid white;
+    border-radius: 12px;
+    background-color: #222;
+    color: #fff;
+    border: 2px solid #fff;
+    transition: all 0.3s;
 }
+button:hover {
+    background-color: #fff;
+    color: #222;
+}
+
 #adModal {
     display: none;
     position: fixed;
@@ -35,27 +61,33 @@ button {
     align-items: center;
 }
 #adContent {
-    background: black;
+    background: #111;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 15px;
 }
+video { max-width: 80vw; max-height: 60vh; }
 </style>
 </head>
 <body>
 
-<h1>Virtual Casino</h1>
-<div id="balance">Balance: $0</div>
+<div class="container">
+    <h1>Virtual Casino</h1>
+    <div id="balance">Balance: $0</div>
 
-<!-- Game Buttons -->
-<button onclick="location.href='bigsmoke.html'">Big Smoke Table - Find the Burger!</button>
-<br>
-<button id="watchAdBtn">Watch Ad to Earn $1000</button>
+    <!-- Game Buttons -->
+    <button onclick="location.href='roulette.html'">Roulette</button>
+    <button onclick="location.href='slots.html'">Slots</button>
+    <button onclick="location.href='blackjack.html'">Blackjack</button>
+    <button onclick="location.href='double.html'">Double or Nothing</button>
+    <button onclick="location.href='bigsmoke.html'">Big Smoke Table</button>
+    <button id="watchAdBtn">Watch Ad to Earn $1000</button>
+</div>
 
 <!-- Ad Modal -->
 <div id="adModal">
     <div id="adContent">
         <h2>Ad: Watch to earn money</h2>
-        <video src="Super.mp4" controls autoplay style="max-width:80vw; max-height:60vh;"></video>
+        <video src="Super.mp4" controls autoplay></video>
         <br><br>
         <button id="closeAdBtn">Close Ad</button>
     </div>
