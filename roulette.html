@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roulette</title>
+<style>
+body { 
+    background-image: url('https://i.imgflip.com/5lc1pb.jpg');
+    background-size: cover; background-position: center; font-family: Arial, sans-serif; text-align:center; color:white;
+}
+canvas { margin-top: 20px; background:#fff; border-radius:50%; }
+#balance{ font-size:24px; margin:20px; }
+button, input, select{ font-size:16px; padding:5px; margin:5px; }
+#arrow{ width:0; height:0; border-left:15px solid transparent; border-right:15px solid transparent; border-bottom:30px solid yellow; margin:10px auto; }
+</style>
+</head>
+<body>
+
+<h1>Roulette</h1>
+<div id="balance">Balance: $0</div>
+<div id="arrow"></div>
+<input type="number" id="rouletteBetAmount" placeholder="Bet amount">
+<select id="rouletteBetChoice">
+  <option value="Red">Red</option>
+  <option value="Black">Black</option>
+  <option value="Odd">Odd</option>
+  <option value="Even">Even</option>
+</select>
+<button id="rouletteSpinBtn">Spin</button>
+<br><button onclick="location.href='index.html'">Back to Menu</button>
+
+<canvas id="rouletteCanvas" width="300" height="300"></canvas>
+<audio id="gamblingSound" src="Lets.mp3"></audio>
+
+<script>
+let balance = Number(localStorage.getItem('balance')) || 0;
+const balanceEl = document.getElementById('balance');
+balanceEl.textContent = `Balance: $${balance}`;
+const canvas = document.getElementById('rouletteCanvas');
+const ctx = canvas.getContext('2d');
+const gamblingSound = document.getElementById('gamblingSound');
+
+const segments = [...Array(37).keys()]; // 0-36
+let startAngle=0;
+
+function drawWheel(){
+    const arc = 2*Math.PI/segments.length;
+    for(let i=0;i<segments.length;i++){
+        ctx.beginPath(); ctx.moveTo(150,150);
+        const color = segments[i]===0 ? '#00FF00' : (i%2===0?'#000000':'#FF0000');
+        ctx.arc(150,150,150,startAngle+i*arc,startAngle+(i+1)*arc);
+        ctx.fillStyle=color; ctx.fill(); ctx.stroke();
+        ctx.save();
+        ctx.translate(150+Math.cos(startAngle+(i+0.5)*arc)*100,150+Math.sin(startAngle+(i+0.5)*arc)*100);
+        ctx.rotate(startAngle+(i+0.5)*arc);
+        ctx.fillStyle='#fff'; ctx.font='14px Arial';
+        ctx.fillText(segments[i],-10,0); ctx.restore();
+    }
+}
+drawWheel();
+
+document.getElementById('rouletteSpinBtn').addEventListener('click',()=>{
+    const betAmount=Number(document.getElementById('rouletteBetAmount').value);
+    const betChoice=document.getElementById('rouletteBetChoice').value;
+    if(betAmount<=0 || betAmount>balance){alert('Invalid bet'); return;}
+
+    gamblingSound.currentTime=0;
+    gamblingSound.loop=true;
+    gamblingSound.play();
+
+    let spinAngle=Math.random()*10+10; let spinTime=3000; let start=null;
+
+    function animate(time){
+        if(!start) start=time;
+        const elapsed = time-start;
+        const progress=Math.min(elapsed/spinTime,1);
+        startAngle += spinAngle*(1-progress);
+        ctx.clearRect(0,0,300,300); drawWheel();
+        if(progress<1){requestAnimationFrame(animate);}
+        else{
+            gamblingSound.pause();
+            const index = Math.floor(segments.length - (startAngle/(2*Math.PI)*segments.length)) % segments.length;
+            const result = segments[index];
+            let win=false;
+            if(betChoice==='Red' && result!==0 && result%2===1) win=true;
+            else if(betChoice==='Black' && result!==0 && result%2===0) win=true;
+            else if(betChoice==='Odd' && result!==0 && result%2===1) win=true;
+            else if(betChoice==='Even' && result!==0 && result%2===0) win=true;
+            if(win){balance+=betAmount*2; alert(`Roulette: ${result}. You win $${betAmount*2}`);}
+            else{balance-=betAmount; alert(`Roulette: ${result}. You lose $${betAmount}`);}
+            balanceEl.textContent=`Balance: $${balance}`;
+            localStorage.setItem('balance',balance);
+        }
+    }
+    requestAnimationFrame(animate);
+});
+</script>
+
+</body>
+</html>
