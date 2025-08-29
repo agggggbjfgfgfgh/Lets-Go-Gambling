@@ -3,128 +3,131 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Slots</title>
+<title>Slots Machine with Spinning Fruits</title>
 <style>
-body { 
-    background-color: black; /* Changed background to black */
-    font-family: Arial, sans-serif; 
-    text-align: center; 
-    color: white; 
-    margin: 0; 
-    padding: 20px;
+body {
+  background-color: black;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  color: white;
+  margin: 0;
+  padding: 20px;
 }
-h1 {
-    margin-bottom: 10px;
-}
-#balance {
-    font-size: 24px; 
-    margin: 20px 0;
-}
+h1 { margin-bottom: 10px; }
+#balance { font-size: 24px; margin: 20px 0; }
 input[type=number] {
-    font-size: 16px;
-    padding: 10px;
-    width: 150px;
-    margin: 10px 0;
+  font-size: 16px; padding: 10px; width: 150px; margin: 10px 0;
 }
 button {
-    font-size: 16px; 
-    padding: 10px 20px; 
-    margin: 10px;
-    cursor: pointer;
-    background-color: #333;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    transition: background-color 0.2s;
+  font-size: 16px; padding: 10px 20px; margin: 10px;
+  cursor: pointer; background-color: #333; color: white;
+  border: none; border-radius: 5px; transition: background-color 0.2s;
 }
-button:hover {
-    background-color: #555;
-}
+button:hover { background-color: #555; }
 #slotsResult {
-    font-size: 36px;
-    margin-top: 20px;
-    min-height: 50px;
-    transition: opacity 0.5s ease;
-    opacity: 1;
+  font-size: 36px; margin-top: 20px; min-height: 50px;
+  transition: opacity 0.5s ease;
+}
+#reelContainer {
+  display: flex; justify-content: center; margin-top: 20px;
+}
+.reel {
+  width: 80px; height: 80px; margin: 0 10px;
+  font-size: 2.5em; display: flex; align-items: center; justify-content: center;
+  border: 4px solid #fff; border-radius: 8px; background-color: #34495e;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+  transition: all 0.2s;
 }
 </style>
 </head>
 <body>
+
 <h1>Slots Machine</h1>
-<div id="balance">Balance: $0</div>
-<input type="number" id="slotsBet" placeholder="Bet amount" min="1">
+<div id="balance">Balance: $<span id="balanceAmount">0</span></div>
+<input type="number" id="slotsBet" placeholder="Bet amount" min="1" />
 <br>
-<button id="spinSlotsBtn">Spin</button>
+<div id="reelContainer">
+  <div class="reel" id="reel1">🍒</div>
+  <div class="reel" id="reel2">🍋</div>
+  <div class="reel" id="reel3">🍇</div>
+</div>
+<button id="spinBtn">Spin</button>
 <div id="slotsResult"></div>
 <br>
 <button onclick="location.href='index.html'">Back to Menu</button>
-<audio id="gamblingSound" src="Lets.mp3"></audio>
 
 <script>
-let balance = Number(localStorage.getItem('balance')) || 100; // Default to 100 for testing
-const balanceEl = document.getElementById('balance');
-balanceEl.textContent = `Balance: $${balance}`;
-const gamblingSound = document.getElementById('gamblingSound');
+const symbols = ['🍒','🍋','🍊','⭐','💎','🍉'];
+let spinning = false;
+const balanceKey='balance';
 
-document.getElementById('spinSlotsBtn').addEventListener('click', () => {
-    const bet = Number(document.getElementById('slotsBet').value);
-    if (isNaN(bet) || bet <= 0 || bet > balance) {
-        alert('Invalid bet! Please enter a positive number up to your current balance.');
-        return;
+let balance = parseInt(localStorage.getItem(balanceKey)) || 100;
+document.getElementById('balanceAmount').textContent = balance;
+
+// Function to spin the reels with animation
+document.getElementById('spinBtn').addEventListener('click', () => {
+  if (spinning) return;
+  const bet = parseInt(document.getElementById('slotsBet').value);
+  if (isNaN(bet) || bet <= 0 || bet > balance) {
+    alert('Invalid bet! Enter a positive number up to your balance.');
+    return;
+  }
+
+  // Play sound
+  // (Optional: add sound here)
+
+  spinning = true;
+  document.getElementById('slotsResult').style.opacity = 0;
+  // Animate fruits rapidly
+  const reelIds = ['reel1','reel2','reel3'];
+  const intervals = [];
+
+  // Start rapid changing
+  for(let i=0; i<3; i++){
+    intervals[i] = setInterval(() => {
+      document.getElementById(reelIds[i]).innerText = symbols[Math.floor(Math.random() * symbols.length)];
+    }, 50);
+  }
+
+  // Stop after 2 seconds
+  setTimeout(() => {
+    // Clear intervals
+    for(let i=0; i<3; i++) clearInterval(intervals[i]);
+
+    // Final fruits
+    const finalResults = [
+      symbols[Math.floor(Math.random() * symbols.length)],
+      symbols[Math.floor(Math.random() * symbols.length)],
+      symbols[Math.floor(Math.random() * symbols.length)]
+    ];
+
+    // Show final fruits
+    document.getElementById('reel1').innerText = finalResults[0];
+    document.getElementById('reel2').innerText = finalResults[1];
+    document.getElementById('reel3').innerText = finalResults[2];
+
+    // Check for wins
+    let message = '';
+    if (finalResults[0] === finalResults[1] && finalResults[1] === finalResults[2]) {
+      const winAmount = bet * 5;
+      balance += winAmount;
+      message = `🎉 Jackpot! You won $${winAmount}!`;
+    } else if (finalResults[0] === finalResults[1] || finalResults[1] === finalResults[2] || finalResults[0] === finalResults[2]) {
+      const winAmount = bet * 2;
+      balance += winAmount;
+      message = `😊 Nice! You won $${winAmount}!`;
+    } else {
+      balance -= bet;
+      message = `😢 No win. You lost $${bet}.`;
     }
-
-    // Play sound
-    gamblingSound.currentTime = 0;
-    gamblingSound.loop = false;
-    gamblingSound.play();
-
-    const symbols = ['🍒','🍋','🍊','⭐','💎'];
-    // Animate reel spinning effect
-    const reelCount = 3;
-    const reelResults = [];
-    for (let i=0; i<reelCount; i++) {
-        reelResults.push('');
-    }
-    document.getElementById('slotsResult').style.opacity = 0;
-    document.getElementById('slotsResult').textContent = '';
-
-    // Generate random symbols for reels
-    const reel = [];
-    for (let i=0; i<reelCount; i++) {
-        reel.push(symbols[Math.floor(Math.random() * symbols.length)]);
-    }
-
-    // Display spinning animation
-    let spinCount = 0;
-    const spinInterval = setInterval(() => {
-        const tempReel = [];
-        for (let i=0; i<reelCount; i++) {
-            tempReel.push(symbols[Math.floor(Math.random() * symbols.length)]);
-        }
-        document.getElementById('slotsResult').textContent = tempReel.join(' ');
-        spinCount++;
-        if (spinCount >= 10) { // Spin 10 times
-            clearInterval(spinInterval);
-            // Show final reel
-            document.getElementById('slotsResult').textContent = reel.join(' ');
-            // Evaluate results
-            if (reel[0] === reel[1] && reel[1] === reel[2]) {
-                const win = bet * 5;
-                balance += win;
-                alert(`🎉 Jackpot! You win $${win}`);
-            } else if (reel[0] === reel[1] || reel[1] === reel[2] || reel[0] === reel[2]) {
-                const win = bet * 2;
-                balance += win;
-                alert(`😊 Nice! You win $${win}`);
-            } else {
-                balance -= bet;
-                alert(`😢 You lose $${bet}`);
-            }
-            balanceEl.textContent = `Balance: $${balance}`;
-            localStorage.setItem('balance', balance);
-            document.getElementById('slotsResult').style.opacity = 1;
-        }
-    }, 200);
+    document.getElementById('balanceAmount').textContent = balance;
+    localStorage.setItem(balanceKey, balance);
+    // Show result message
+    const resultDiv = document.getElementById('slotsResult');
+    resultDiv.textContent = message;
+    resultDiv.style.opacity = 1;
+    spinning = false;
+  }, 2000);
 });
 </script>
 </body>
