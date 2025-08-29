@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Roulette</title>
 <style>
 body { 
-    background-image: url('https://i.imgflip.com/5lc1pb.jpg');
-    background-size: cover; background-position: center; font-family: Arial, sans-serif; text-align:center; color:white;
+    background-color: black; /* Changed from background-image to background-color */
+    font-family: Arial, sans-serif; 
+    text-align:center; 
+    color:white;
 }
 canvas { margin-top: 20px; background:#fff; border-radius:50%; }
 #balance{ font-size:24px; margin:20px; }
@@ -20,7 +22,7 @@ button, input, select{ font-size:16px; padding:5px; margin:5px; }
 <h1>Roulette</h1>
 <div id="balance">Balance: $0</div>
 <div id="arrow"></div>
-<input type="number" id="rouletteBetAmount" placeholder="Bet amount">
+<input type="number" id="rouletteBetAmount" placeholder="Bet amount" />
 <select id="rouletteBetChoice">
   <option value="Red">Red</option>
   <option value="Black">Black</option>
